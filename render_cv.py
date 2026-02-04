@@ -76,7 +76,14 @@ def render_and_compile(data: Dict[str, Any], template_path: str = "templates") -
         autoescape=select_autoescape(enabled_extensions=()),
         trim_blocks=True,
         lstrip_blocks=True,
+
+        # IMPORTANT: avoid conflicts with LaTeX "{%" and "{#"
+        block_start_string="((*",
+        block_end_string="*))",
+        comment_start_string="((#",
+        comment_end_string="#))",
     )
+
 
     # Register our LaTeX-escaping filter
     env.filters["latex"] = latex_escape

@@ -96,100 +96,59 @@
 
 % ---------- Header ----------
 \begin{center}
-  {\Huge \scshape {{ first_name|latex }}\ {{ last_name|latex }}} \\ \vspace{10pt}
+  {\Huge \scshape Amaury\ Gouverneur} \\ \vspace{10pt}
   \small
-  ((* if website_url and website_text *))
-    \href{ {{ website_url|latex }} }{\raisebox{-0.1\height}\faHome~{{ website_text|latex }}} ~
-  ((* endif *))
-  ((* if email *))
-    \href{mailto:{{ email|latex }}}{\raisebox{-0.2\height}{\faIcon[regular]{envelope}}~{{ email|latex }}} ~
-  ((* endif *))
-  ((* if phone *))
-    \href{tel:{{ phone|latex }}}{\faIcon{mobile}~{{ phone|latex }}} ~
-  ((* endif *))
-  ((* if linkedin_url *))
-    \href{ {{ linkedin_url|latex }} }{\raisebox{-0.2\height}\faLinkedinIn} ~
-  ((* endif *))
-  ((* if scholar_url *))
-    \href{ {{ scholar_url|latex }} }{\raisebox{-0.2\height}\faGraduationCap}
-  ((* endif *))
+    \href{ https://example.com/\textasciitilde{}amaury\_g?x=1\&y=2 }{\raisebox{-0.1\height}\faHome~homepage} ~
+    \href{mailto:amauryg@kth.se}{\raisebox{-0.2\height}{\faIcon[regular]{envelope}}~amauryg@kth.se} ~
+    \href{tel:+46 70 123 45 67}{\faIcon{mobile}~+46 70 123 45 67} ~
+    \href{ https://www.linkedin.com/in/example\_profile }{\raisebox{-0.2\height}\faLinkedinIn} ~
+    \href{ https://scholar.google.com/citations?user=XXXX }{\raisebox{-0.2\height}\faGraduationCap}
 \end{center}
 
-((* if profile_text *))
 \section{Profile}
-{{ profile_text|latex }}
-((* endif *))
+PhD student in ML. I like 50\% theory \& 50\% practice. R\&D, foo\_bar, \$100.
 
-((* if research_expertise *))
 \section{Research Expertise}
-{{ research_expertise|latex }}
-((* endif *))
+Bandits, information theory, reinforcement learning.
 
-((* if education and education|length > 0 *))
 \section{Education}
 \EntryListStart
-((* for edu in education *))
-  ((* if edu.get("variant","full") == "small" *))
-    \EducationEntrySmall
-      { {{ edu.institution|latex }} }{ {{ edu.city|latex }}((* if edu.country *)), {{ edu.country|latex }}((* endif *)) }
-      { {{ edu.start|latex }} -- {{ edu.end|latex }} }
-      { {{ edu.degree|latex }} }
-      { {{ edu.info1|default("")|latex }} }
-  ((* else *))
     \EducationEntry
-      { {{ edu.institution|latex }} }{ {{ edu.city|latex }}((* if edu.country *)), {{ edu.country|latex }}((* endif *)) }
-      { {{ edu.start|latex }} -- {{ edu.end|latex }} }
-      { {{ edu.degree|latex }} }
-      { {{ edu.info1|default("")|latex }} }
-      { {{ edu.info2|default("")|latex }} }
-      { {{ edu.info3|default("")|latex }} }
-  ((* endif *))
-((* endfor *))
+      { KTH Royal Institute of Technology }{ Stockholm, Sweden }
+      { Sep 2020 -- Present }
+      { PhD in Machine Learning }
+      { Advisor: Someone \& Someoneelse }
+      { Thesis: Information-theoretic analysis of Thompson sampling }
+      { GPA: N/A }
+    \EducationEntrySmall
+      { Some University }{ Paris, France }
+      { Sep 2018 -- Jun 2020 }
+      { MSc in Mathematics }
+      { Graduated with honors }
 \EntryListEnd
-((* endif *))
 
-((* if work and work|length > 0 *))
 \section{Work Experience}
 \EntryListStart
-((* for job in work *))
   \RoleEntry
-    { {{ job.role|latex }} }{ {{ job.company|latex }} }{ {{ job.city|latex }}((* if job.country *)), {{ job.country|latex }}((* endif *)) }
-    { {{ job.start|latex }} -- {{ job.end|latex }} }
+    { Research Intern }{ Example Labs }{ Zurich, Switzerland }
+    { Jun 2024 -- Aug 2024 }
     {
-      ((* if job.bullets and job.bullets|length > 0 *))
       \resumeItemListStart
-      ((* for b in job.bullets *))
-        \resumeItem{ {{ b|latex }} }
-      ((* endfor *))
+        \resumeItem{ Built a Streamlit app to generate LaTeX CVs. }
+        \resumeItem{ Handled edge cases: \%, \&, \_, \$, \#, \{, \}, \textasciitilde{}, \textasciicircum{} and backslashes (\textbackslash{}). }
       \resumeItemListEnd
-      ((* else *))
-      {}
-      ((* endif *))
     }
-((* endfor *))
 \EntryListEnd
-((* endif *))
 
-((* if selected_project *))
 \section{Selected Project}
-{{ selected_project|latex }}
-((* endif *))
+Selected project text with special chars: 100\% improvement \& robust pipeline.
 
-((* if skills_languages or skills_libraries or skills_tools *))
 \section{Programming skills}
-((* if skills_languages *))\textsc{Languages}: {{ skills_languages|latex }}\\((* endif *))
-((* if skills_libraries *))\textsc{Libraries}: {{ skills_libraries|latex }}\\((* endif *))
-((* if skills_tools *))\textsc{Tools \& Environment}: {{ skills_tools|latex }}((* endif *))
-((* endif *))
-
-((* if spoken_languages *))
+\textsc{Languages}: Python, C++, LaTeX\\\textsc{Libraries}: NumPy, PyTorch, JAX\\\textsc{Tools \& Environment}: Git, Linux, Docker, Streamlit
 \section{Languages}
-{{ spoken_languages|latex }}
-((* endif *))
+French (native), English (fluent), Swedish (basic)
 
-((* if other_interests *))
 \section{Other Interests}
-{{ other_interests|latex }}
-((* endif *))
+Climbing, chess, travel.
 
 \end{document}
