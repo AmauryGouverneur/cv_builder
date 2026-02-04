@@ -1,0 +1,15 @@
+# Virtual environments
+.venv/
+venv/
+.env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Streamlit
+.streamlit/
+
+# Build outputs / temp
+out/
+*.pdf
