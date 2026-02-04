@@ -14,13 +14,13 @@ def init_state() -> None:
         st.session_state.data = {
             "first_name": "Amaury",
             "last_name": "Gouverneur",
-            "email": "",
-            "phone": "",
-            "website_text": "",
-            "website_url": "",
-            "linkedin_url": "",
-            "scholar_url": "",
-            "profile_text": "",
+            "email": "amaury.gouverneur@gmail.com",
+            "phone": "079355-8427",
+            "website_text": "amaurygouverneur.github.io",
+            "website_url": "https://amaurygouverneur.github.io",
+            "linkedin_url": "https://www.linkedin.com/in/amaury-gouverneur",
+            "scholar_url": "https://scholar.google.com/citations?user=ajb9VxQAAAAJ\&hl=en\&oi=ao",
+            "profile_text": "PhD in reinforcement learning and information theory, focused on how learning agents efficiently acquire and use information under uncertainty in bandit and RL settings. I am particularly interested in principled algorithms that combine theoretical guarantees with practical impact. Published work at top-tier machine learning and information-theoretic conferences.",
             "research_expertise": "",
             "education": [],
             "work": [],
@@ -254,8 +254,13 @@ with left:
 with right:
     st.subheader("Preview")
     if st.session_state.last_pdf:
-        st.pdf(st.session_state.last_pdf) if hasattr(st, "pdf") else st.info(
-            "Preview not supported in this Streamlit version. Download the PDF to view it."
-        )
+        try:
+            st.pdf(st.session_state.last_pdf)
+        except Exception:
+            st.info(
+                "PDF preview is unavailable on this deployment. "
+                "You can still download the PDF below."
+            )
     else:
         st.info("Click **Generate PDF** to build and preview your CV.")
+
