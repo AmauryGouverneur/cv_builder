@@ -1,0 +1,291 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=0mm,noheadfoot]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{atbegshi}
+
+% -----------------------
+% Colors
+% -----------------------
+\definecolor{ChiefBG}{RGB}{243,241,227}
+\definecolor{ChiefBlue}{RGB}{23,3,241}
+\definecolor{ChiefText}{RGB}{35,35,35}
+
+% -----------------------
+% Fonts
+% -----------------------
+\setmainfont{TeX Gyre Termes}[Ligatures=TeX]
+\setsansfont{TeX Gyre Heros}[Ligatures=TeX]
+\newfontfamily\DisplaySerif{TeX Gyre Termes}
+\newfontfamily\BodySans{TeX Gyre Heros}
+
+% -----------------------
+% Global styling
+% -----------------------
+\pagecolor{ChiefBG}
+\color{ChiefText}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% -----------------------
+% Layout constants
+% -----------------------
+\newcommand{\LM}{24mm}
+\newcommand{\RM}{24mm}
+\newcommand{\TM}{20mm}
+\newcommand{\BM}{24mm}
+
+\newcommand{\ChiefFooter}{\small Chief Consulting AB \,\textbullet\, Org.nr: 559205-4380 \,\textbullet\, info@chief.se \,\textbullet\, chief.se}
+
+% -----------------------
+% Header / Footer overlays
+% -----------------------
+\newcommand{\ChiefHeader}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north] at ([yshift=-9mm]current page.north) {%
+      {\DisplaySerif\fontsize{24}{24}\selectfont\bfseries ch\kern-0.2ex
+        \tikz[baseline=(i.base)]{
+          \node[inner sep=0pt,outer sep=0pt] (i) {\DisplaySerif\fontsize{24}{24}\selectfont\bfseries i};
+          \fill[cyan!75!blue] ([xshift=-0.05pt,yshift=14.64pt]i.base) circle (1.864pt);
+        }%
+        \kern-0.2ex ef
+      }%
+    };
+    \draw[line width=0.45pt]
+      ([xshift=\LM,yshift=-20mm]current page.north west) --
+      ([xshift=-\RM,yshift=-20mm]current page.north east);
+  \end{tikzpicture}%
+}
+
+\newcommand{\ChiefFooterLine}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south] at ([yshift=7mm]current page.south) {\ChiefFooter};
+  \end{tikzpicture}%
+}
+
+\AtBeginShipout{%
+  \AtBeginShipoutAddToBox{%
+    \ChiefHeader%
+    \ChiefFooterLine%
+  }%
+}
+
+% -----------------------
+% Right-column blocks (page 1)
+% -----------------------
+\newcommand{\RightHeading}[1]{%
+  {\itshape\bfseries\color{ChiefBlue}\BodySans #1}\par
+}
+\newcommand{\RightBlock}[2]{%
+  \RightHeading{#1}%
+  {\BodySans\small #2}\par\vspace{10mm}
+}
+
+% -----------------------
+% Section + experience styles (flowing, pageable)
+% -----------------------
+\newcommand{\SectionTitle}[1]{%
+  {\DisplaySerif\fontsize{22}{24}\selectfont\bfseries #1}\par\vspace{6mm}
+}
+
+\newcommand{\ExpHeader}[2]{%
+  {\BodySans\small\bfseries #1}\par
+  {\BodySans\small #2}\par\vspace{5mm}
+}
+\newcommand{\ExpSub}[1]{%
+  {\BodySans\small\bfseries #1}\par\vspace{1mm}
+}
+\newcommand{\ExpText}[1]{%
+  {\BodySans\small\setstretch{1.25} #1}\par\vspace{4mm}
+}
+
+\newenvironment{ExperienceEntry}[2]{%
+  \par\vspace{10mm}%
+  \ExpHeader{#1}{#2}%
+}{%
+  \par
+}
+
+% -----------------------
+% Helper: render paragraphs with blank-line separation
+% (Write text as plain paragraphs in your data; separate with \n\n)
+% -----------------------
+\newcommand{\ChiefParaBreak}{\par\vspace{2mm}}
+
+\begin{document}
+\pagestyle{empty}
+
+% -----------------------
+% PAGE 1 (designed overlay)
+% -----------------------
+\begin{tikzpicture}[remember picture,overlay]
+
+  % Photo banner
+  \node[anchor=north] at ([yshift=-32mm]current page.north) {%
+    \includegraphics[width=166mm]{((* if photo_banner_path *)){{ photo_banner_path }}((* else *))photo_banner.png((* endif *))}
+  };
+
+  % Name block
+  \node[anchor=north west,align=left] at ([xshift=\LM,yshift=-118mm]current page.north west) {%
+    {\DisplaySerif\fontsize{40}{60}\selectfont\bfseries {{ first_name|latex }}}\\[5mm]
+    {\DisplaySerif\fontsize{40}{60}\selectfont\bfseries {{ last_name|latex }}}\\
+  };
+
+  % Yellow highlight
+  \node[anchor=north west] at ([xshift=\LM-4mm,yshift=-148mm]current page.north west) {%
+    \includegraphics[width=85mm]{((* if highlight_path *)){{ highlight_path }}((* else *))highlight.png((* endif *))}
+  };
+
+  % Title
+  \node[anchor=north west] at ([xshift=\LM+2mm,yshift=-152mm]current page.north west) {%
+    {\BodySans\fontsize{10.5}{12}\selectfont\bfseries {{ title|default("PROJECT MANAGER")|latex }}}
+  };
+
+  % Profile text (left column)
+  ((* if profile_text *))
+  \node[anchor=north west,align=left,text width=92mm] at ([xshift=\LM,yshift=-164mm]current page.north west) {%
+    {\BodySans\small\setstretch{1.35}
+    {{ profile_text|latex }}
+    }
+  };
+  ((* endif *))
+
+  % Right column blocks
+  ((* if right_blocks and right_blocks|length > 0 *))
+  \node[anchor=north west,align=left,text width=66mm] at ([xshift=126mm,yshift=-152mm]current page.north west) {%
+    ((* for blk in right_blocks *))
+      \RightBlock{ {{ blk.heading|latex }} }{ {{ blk.body|latex }} }
+    ((* endfor *))
+  };
+  ((* endif *))
+
+\end{tikzpicture}
+
+% Move to normal flowing pages
+\clearpage
+
+% From page 2 onward, let LaTeX manage margins normally:
+\newgeometry{a4paper,left=\LM,right=\RM,top=32mm,bottom=\BM}
+
+% -----------------------
+% EXPERIENCE (flows across pages)
+% -----------------------
+((* if experience and experience|length > 0 *))
+\SectionTitle{Experience}
+
+((* for e in experience *))
+\begin{ExperienceEntry}{ {{ e.dates_company|latex }} }{ {{ e.role|default("")|latex }} }
+
+((* if e.tasks *))
+\ExpSub{Tasks}
+\ExpText{ {{ e.tasks|latex }} }
+((* endif *))
+
+((* if e.contribution *))
+\ExpSub{Contribution}
+\ExpText{ {{ e.contribution|latex }} }
+((* endif *))
+
+((* if e.outcome *))
+\ExpSub{Outcome}
+\ExpText{ {{ e.outcome|latex }} }
+((* endif *))
+
+((* if e.keywords *))
+{\BodySans\small\bfseries Keywords: }{\BodySans\small {{ e.keywords|latex }}}
+((* endif *))
+
+\end{ExperienceEntry}
+((* endfor *))
+((* endif *))
+
+% -----------------------
+% SUMMARY PAGE (designed; forced clean break)
+% -----------------------
+((* if summary_enabled|default(true) *))
+\clearpage
+\vspace*{4mm}
+
+\begin{minipage}[t]{0.56\linewidth}
+  \SectionTitle{Employment}
+  {\BodySans\small
+  \begin{tabular}{@{}p{13mm}p{70mm}@{}}
+  ((* for row in employment_rows|default([]) *))
+  \textbf{ {{ row.year|latex }} } & \textbf{ {{ row.org|latex }} }\\
+  ((* endfor *))
+  \end{tabular}
+  }
+
+  ((* if extracurricular_rows and extracurricular_rows|length > 0 *))
+  \vspace{14mm}
+  \SectionTitle{Extracurricular}
+  {\BodySans\small
+  ((* for row in extracurricular_rows *))
+  \textbf{ {{ row.year|latex }} } \, {{ row.text|latex }}\\
+  ((* endfor *))
+  }
+  ((* endif *))
+
+  ((* if about_me *))
+  \vspace{18mm}
+  \SectionTitle{About me}
+  {\BodySans\small\setstretch{1.35}
+  {{ about_me|latex }}\par
+  }
+  \vspace{6mm}
+  {\BodySans\small .}
+  ((* endif *))
+\end{minipage}\hfill
+\begin{minipage}[t]{0.38\linewidth}
+
+  ((* if education_cert_title *))
+  {\itshape\bfseries\color{ChiefBlue}\BodySans {{ education_cert_title|latex }}}\par\vspace{5mm}
+  ((* else *))
+  {\itshape\bfseries\color{ChiefBlue}\BodySans Education and\par certification}\par\vspace{5mm}
+  ((* endif *))
+
+  ((* if education_rows and education_rows|length > 0 *))
+  {\BodySans\small
+  ((* for ed in education_rows *))
+  \textbf{ {{ ed.years|latex }} }\\
+  {{ ed.text|latex }}\par\vspace{5mm}
+  ((* endfor *))
+  }
+  ((* endif *))
+
+  ((* if languages_block *))
+  \vspace{14mm}
+  {\itshape\bfseries\color{ChiefBlue}\BodySans Languages}\par\vspace{3mm}
+  {\BodySans\small
+  {{ languages_block|latex }}
+  }
+  ((* endif *))
+
+  ((* if other_skills_block *))
+  \vspace{14mm}
+  {\itshape\bfseries\color{ChiefBlue}\BodySans Other skills}\par\vspace{3mm}
+  {\BodySans\small
+  {{ other_skills_block|latex }}
+  }
+  ((* endif *))
+
+\end{minipage}
+((* endif *))
+
+% Optional blank last page
+((* if blank_last_page|default(true) *))
+\clearpage
+\vspace*{40mm}
+((* endif *))
+
+\end{document}
