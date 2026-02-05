@@ -1,0 +1,245 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=0mm,noheadfoot]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{atbegshi}
+
+% -----------------------
+% Colors
+% -----------------------
+\definecolor{ChiefBG}{RGB}{243,241,227}
+\definecolor{ChiefBlue}{RGB}{23,3,241}
+\definecolor{ChiefText}{RGB}{35,35,35}
+
+% -----------------------
+% Fonts
+% -----------------------
+\setmainfont{TeX Gyre Termes}[Ligatures=TeX]
+\setsansfont{TeX Gyre Heros}[Ligatures=TeX]
+\newfontfamily\DisplaySerif{TeX Gyre Termes}
+\newfontfamily\BodySans{TeX Gyre Heros}
+
+% -----------------------
+% Global styling
+% -----------------------
+\pagecolor{ChiefBG}
+\color{ChiefText}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% -----------------------
+% Layout constants
+% -----------------------
+\newcommand{\LM}{24mm}
+\newcommand{\RM}{24mm}
+\newcommand{\TM}{20mm}
+\newcommand{\BM}{24mm}
+
+\newcommand{\ChiefFooter}{\small Chief Consulting AB \,\textbullet\, Org.nr: 559205-4380 \,\textbullet\, info@chief.se \,\textbullet\, chief.se}
+
+% -----------------------
+% Header / Footer overlays
+% -----------------------
+\newcommand{\ChiefHeader}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north] at ([yshift=-9mm]current page.north) {%
+      {\DisplaySerif\fontsize{24}{24}\selectfont\bfseries ch\kern-0.2ex
+        \tikz[baseline=(i.base)]{
+          \node[inner sep=0pt,outer sep=0pt] (i) {\DisplaySerif\fontsize{24}{24}\selectfont\bfseries i};
+          \fill[cyan!75!blue] ([xshift=-0.05pt,yshift=14.64pt]i.base) circle (1.864pt);
+        }%
+        \kern-0.2ex ef
+      }%
+    };
+    \draw[line width=0.45pt]
+      ([xshift=\LM,yshift=-20mm]current page.north west) --
+      ([xshift=-\RM,yshift=-20mm]current page.north east);
+  \end{tikzpicture}%
+}
+
+\newcommand{\ChiefFooterLine}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south] at ([yshift=7mm]current page.south) {\ChiefFooter};
+  \end{tikzpicture}%
+}
+
+\AtBeginShipout{%
+  \AtBeginShipoutAddToBox{%
+    \ChiefHeader%
+    \ChiefFooterLine%
+  }%
+}
+
+% -----------------------
+% Right-column blocks (page 1)
+% -----------------------
+\newcommand{\RightHeading}[1]{%
+  {\itshape\bfseries\color{ChiefBlue}\BodySans #1}\par
+}
+\newcommand{\RightBlock}[2]{%
+  \RightHeading{#1}%
+  {\BodySans\small #2}\par\vspace{10mm}
+}
+
+% -----------------------
+% Section + experience styles (flowing, pageable)
+% -----------------------
+\newcommand{\SectionTitle}[1]{%
+  {\DisplaySerif\fontsize{22}{24}\selectfont\bfseries #1}\par\vspace{6mm}
+}
+
+\newcommand{\ExpHeader}[2]{%
+  {\BodySans\small\bfseries #1}\par
+  {\BodySans\small #2}\par\vspace{5mm}
+}
+\newcommand{\ExpSub}[1]{%
+  {\BodySans\small\bfseries #1}\par\vspace{1mm}
+}
+\newcommand{\ExpText}[1]{%
+  {\BodySans\small\setstretch{1.25} #1}\par\vspace{4mm}
+}
+
+\newenvironment{ExperienceEntry}[2]{%
+  \par\vspace{10mm}%
+  \ExpHeader{#1}{#2}%
+}{%
+  \par
+}
+
+% -----------------------
+% Helper: render paragraphs with blank-line separation
+% (Write text as plain paragraphs in your data; separate with \n\n)
+% -----------------------
+\newcommand{\ChiefParaBreak}{\par\vspace{2mm}}
+
+\begin{document}
+\pagestyle{empty}
+
+% -----------------------
+% PAGE 1 (designed overlay)
+% -----------------------
+\begin{tikzpicture}[remember picture,overlay]
+
+  % Photo banner
+  \node[anchor=north] at ([yshift=-32mm]current page.north) {%
+    \includegraphics[width=166mm]{photo_banner.png}
+  };
+
+  % Name block
+  \node[anchor=north west,align=left] at ([xshift=\LM,yshift=-118mm]current page.north west) {%
+    {\DisplaySerif\fontsize{40}{60}\selectfont\bfseries Chief}\\[5mm]
+    {\DisplaySerif\fontsize{40}{60}\selectfont\bfseries Chiefsson}\\
+  };
+
+  % Yellow highlight (hardcoded asset)
+  \node[anchor=north west] at ([xshift=\LM-4mm,yshift=-148mm]current page.north west) {%
+    \includegraphics[width=85mm]{highlight.png}
+  };
+
+  % Title
+  \node[anchor=north west] at ([xshift=\LM+2mm,yshift=-152mm]current page.north west) {%
+    {\BodySans\fontsize{10.5}{12}\selectfont\bfseries PROJECT MANAGER}
+  };
+
+  % Profile text (left column)
+  \node[anchor=north west,align=left,text width=92mm] at ([xshift=\LM,yshift=-164mm]current page.north west) {%
+    {\BodySans\small\setstretch{1.35}
+    Project manager, CAE engineer, and product manager with a strong foundation in mechanical design, simulation, and product development.
+    }
+  };
+
+  % Right column blocks
+  \node[anchor=north west,align=left,text width=66mm] at ([xshift=126mm,yshift=-152mm]current page.north west) {%
+      \RightBlock{ Previous positions }{ Project Manager, CAE Engineer, Product Manager }
+      \RightBlock{ Key Competences }{ Leadership, Problem solving, Project Management, Analytics, Product development, FEM, CFD }
+      \RightBlock{ Skills }{ Python, Matlab, Microsoft Office, Hypermesh, Radioss, AcuSolve }
+      \RightBlock{ Keywords }{ Project management, engineering, leadership, finite element method, product development, R\&D, CFD, Product management, simulation, CAE }
+  };
+
+\end{tikzpicture}
+
+% Move to normal flowing pages
+\clearpage
+
+% From page 2 onward, let LaTeX manage margins normally:
+\newgeometry{a4paper,left=\LM,right=\RM,top=32mm,bottom=\BM}
+
+% -----------------------
+% EXPERIENCE (flows across pages)
+% -----------------------
+
+% -----------------------
+% SUMMARY PAGE (designed; forced clean break)
+% -----------------------
+\clearpage
+\vspace*{4mm}
+
+\begin{minipage}[t]{0.56\linewidth}
+  \SectionTitle{Employment}
+  {\BodySans\small
+  \begin{tabular}{@{}p{13mm}p{70mm}@{}}
+  \textbf{ 2026 } & \textbf{ CHIEF CONSULTING AB }\\
+  \textbf{ 2025 } & \textbf{ MARSHALL GROUP }\\
+  \textbf{ 2022-2025 } & \textbf{ POC SPORTS }\\
+  \end{tabular}
+  }
+
+  \vspace{14mm}
+  \SectionTitle{Extracurricular}
+  {\BodySans\small
+  \textbf{ 2021-2022 } \, SIGMA INDUSTRY STUDENT AMBASSADOR\\
+  \textbf{ 2021 } \, ABB SUSTAINABLE TALENT PROGRAM\\
+  }
+
+  \vspace{18mm}
+  \SectionTitle{About me}
+  {\BodySans\small\setstretch{1.35}
+  Passionate about moving in nature, whether I’m walking, running or cycling. In my free time I like to travel, cook dinner with friends and read books.\par
+  }
+  \vspace{6mm}
+  {\BodySans\small .}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.38\linewidth}
+
+  {\itshape\bfseries\color{ChiefBlue}\BodySans Education and\par certification}\par\vspace{5mm}
+
+  {\BodySans\small
+  \textbf{ 2020--2022 }\\
+  M.Sc. Mechanical Engineering: Solid Mechanics, KTH Royal Institute of Technology\par\vspace{5mm}
+  \textbf{ 2016--2020 }\\
+  B.Sc. Mechanical Engineering, KTH Royal Institute of Technology\par\vspace{5mm}
+  \textbf{ 2019--2020 }\\
+  French, general course, France Langue, Nice, France\par\vspace{5mm}
+  }
+
+  \vspace{14mm}
+  {\itshape\bfseries\color{ChiefBlue}\BodySans Languages}\par\vspace{3mm}
+  {\BodySans\small
+  Swedish -- Mother tongue
+English -- Fluent
+French -- Fluent
+  }
+
+  \vspace{14mm}
+  {\itshape\bfseries\color{ChiefBlue}\BodySans Other skills}\par\vspace{3mm}
+  {\BodySans\small
+  B driver’s license
+  }
+
+\end{minipage}
+
+% Optional blank last page
+\clearpage
+\vspace*{40mm}
+
+\end{document}
