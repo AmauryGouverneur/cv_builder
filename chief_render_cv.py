@@ -112,7 +112,12 @@ def render_and_compile_chief(
 ) -> RenderResult:
     """
     Render + compile the Chief template with LuaLaTeX via latexmk.
-    Also copies required images into temp build dir so \\includegraphics works.
+    Copies required images into temp build dir so \\includegraphics works.
+
+    IMPORTANT:
+    - If data["photo_banner_bytes"] exists, it will be written to photo_banner.png
+      in the build folder and used by the template.
+    - highlight.png is assumed to be hardcoded in the template and shipped with the repo.
     """
     template_dir = Path(template_path).resolve()
     project_root = Path.cwd().resolve()
@@ -128,32 +133,40 @@ def render_and_compile_chief(
         comment_end_string="#))",
     )
     env.filters["latex"] = latex_escape
-
     template = env.get_template(template_name)
 
     # Build in a temp directory
     workdir = Path(tempfile.mkdtemp(prefix="cv_build_"))
 
-    # Resolve + copy assets into workdir, and force template to use basenames
-    # so LaTeX finds them relative to workdir.
-    banner_src = _resolve_asset_path(
-        data.get("photo_banner_path"),
-        template_dir=template_dir,
-        project_root=project_root,
-        default_name="photo_banner.png",
-    )
+    data = dict(data)  # copy so we can safely mutate
+
+    # --- PHOTO BANNER: prefer uploaded bytes ---
+    banner_bytes = data.get("photo_banner_bytes")
+    if isinstance(banner_bytes, (bytes, bytearray)) and len(banner_bytes) > 0:
+        # Write cropped/uploaded banner into build dir
+        (workdir / "photo_banner.png").write_bytes(bytes(banner_bytes))
+        data["photo_banner_path"] = "photo_banner.png"
+    else:
+        # Fallback to banner file shipped with repo / templates
+        banner_src = _resolve_asset_path(
+            data.get("photo_banner_path"),
+            template_dir=template_dir,
+            project_root=project_root,
+            default_name="photo_banner.png",
+        )
+        if banner_src:
+            data["photo_banner_path"] = _copy_asset_to_workdir(banner_src, workdir)
+
+    # --- HIGHLIGHT: hardcoded in template; just ensure it's present in workdir ---
+    # If your template includes \includegraphics{highlight.png}, LaTeX needs it in cwd.
     highlight_src = _resolve_asset_path(
-        data.get("highlight_path"),
+        "highlight.png",
         template_dir=template_dir,
         project_root=project_root,
         default_name="highlight.png",
     )
-
-    data = dict(data)  # copy
-    if banner_src:
-        data["photo_banner_path"] = _copy_asset_to_workdir(banner_src, workdir)
     if highlight_src:
-        data["highlight_path"] = _copy_asset_to_workdir(highlight_src, workdir)
+        _copy_asset_to_workdir(highlight_src, workdir)
 
     tex_str = template.render(**data)
 
@@ -180,6 +193,7 @@ def render_and_compile_chief(
         raise RuntimeError("Build succeeded but main.pdf was not created (unexpected).")
 
     return RenderResult(pdf_bytes=pdf_path.read_bytes(), tex_str=tex_str, workdir=str(workdir))
+
 
 
 def cleanup_workdir(workdir: str) -> None:

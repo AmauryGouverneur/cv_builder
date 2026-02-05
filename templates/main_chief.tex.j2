@@ -141,9 +141,9 @@
     {\DisplaySerif\fontsize{40}{60}\selectfont\bfseries {{ last_name|latex }}}\\
   };
 
-  % Yellow highlight
+  % Yellow highlight (hardcoded asset)
   \node[anchor=north west] at ([xshift=\LM-4mm,yshift=-148mm]current page.north west) {%
-    \includegraphics[width=85mm]{((* if highlight_path *)){{ highlight_path }}((* else *))highlight.png((* endif *))}
+    \includegraphics[width=85mm]{highlight.png}
   };
 
   % Title

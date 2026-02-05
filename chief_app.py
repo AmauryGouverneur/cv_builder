@@ -1,13 +1,63 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from io import BytesIO
+from typing import Any, Dict, List, Optional
 
 import streamlit as st
+from PIL import Image
+from streamlit_cropper import st_cropper
 
 from chief_render_cv import render_and_compile_chief, cleanup_workdir
 
 
 st.set_page_config(page_title="Chief CV Builder", layout="wide")
+
+
+# --- banner crop helpers (center-crop to 1525x700 aspect ratio) ---
+TARGET_W = 1525
+TARGET_H = 700
+TARGET_RATIO = TARGET_W / TARGET_H
+
+import math
+
+def safe_integer_ratio(img_w: int, img_h: int, base_w: int = TARGET_W, base_h: int = TARGET_H) -> tuple[int, int]:
+    """
+    Return an integer (rw, rh) close to (base_w, base_h) but "compatible" with the image
+    so the cropper is less likely to start with an oversized crop box.
+
+    Strategy:
+    - Start from base ratio.
+    - If image is very square/tall relative to the target, reduce the ratio a bit by
+      scaling base_w down (keeping rh fixed scale) so rw/rh approaches img_w/img_h.
+    - Always keep gcd-reduced integers.
+    """
+    if img_w <= 0 or img_h <= 0:
+        return (base_w, base_h)
+
+    target = base_w / base_h
+    img_ratio = img_w / img_h
+
+    # If the image is much less wide than the target, shrink the ratio toward image ratio.
+    # Clamp factor to keep it "almost right" (e.g., allow down to 70% of target ratio).
+    if img_ratio < target:
+        factor = max(0.40, img_ratio / target)  # in [0.70, 1.0)
+    else:
+        factor = 1.0
+
+    rw = max(1, int(round(base_w * factor)))
+    rh = max(1, int(round(base_h * factor)))  # keep height baseline
+
+    # Reduce to simplest integers
+    g = math.gcd(rw, rh)
+    rw //= g
+    rh //= g
+
+    # Safety: ensure not degenerate
+    if rw < 2 or rh < 2:
+        return (base_w, base_h)
+
+    return (rw, rh)
+
 
 
 def init_state() -> None:
@@ -21,9 +71,10 @@ def init_state() -> None:
                 "Project manager, CAE engineer, and product manager with a strong foundation "
                 "in mechanical design, simulation, and product development."
             ),
-            # Optional overrides (renderer will copy into build folder)
+
+            # Banner: default fallback from repo; user can upload to override
             "photo_banner_path": "photo_banner.png",
-            "highlight_path": "highlight.png",
+            # NOTE: highlight is now hardcoded in the template; no field here.
 
             # Right column blocks
             "right_blocks": [
@@ -121,10 +172,63 @@ with left:
     data["title"] = st.text_input("Title (on highlight)", data["title"])
     data["profile_text"] = st.text_area("Profile text", data["profile_text"], height=140)
 
-    st.caption("Image files must exist in the repo (or provide a relative path). They will be copied into the build folder.")
-    c3, c4 = st.columns(2)
-    data["photo_banner_path"] = c3.text_input("Photo banner image path", data.get("photo_banner_path", "photo_banner.png"))
-    data["highlight_path"] = c4.text_input("Highlight image path", data.get("highlight_path", "highlight.png"))
+    st.markdown("### Photo banner")
+    uploaded = st.file_uploader(
+        "Upload banner image (crop box ratio is fixed to 1525×700)",
+        type=["png", "jpg", "jpeg"],
+    )
+
+    if uploaded is not None:
+        raw = uploaded.getvalue()
+        try:
+            img = Image.open(BytesIO(raw)).convert("RGB")
+
+            rw, rh = safe_integer_ratio(img.size[0], img.size[1])
+
+
+            st.caption(
+                "Adjust the crop area (drag to move, handles to resize). "
+                "The crop ratio stays fixed."
+            )
+
+            # Interactive crop: user controls position + size, ratio fixed
+            cropped_img = st_cropper(
+                img,
+                aspect_ratio=(rw, rh),
+                box_color="#000000",
+                return_type="image",  # returns PIL Image
+                realtime_update=True,
+            )
+
+            
+
+            # Show cropped preview
+            st.image(cropped_img, caption="Cropped banner preview", width="stretch")
+
+            # # Always resize output to your exact banner size for LaTeX consistency
+            # cropped_img = cropped_img.resize((1525, 700), Image.LANCZOS)
+
+            # st.image(cropped_img, caption="Cropped banner preview", width="stretch")
+
+            # out = BytesIO()
+            # cropped_img.save(out, format="PNG", optimize=True)
+            # data["photo_banner_bytes"] = out.getvalue()
+            # data["photo_banner_path"] = "photo_banner.png"
+
+            # Convert to PNG bytes and pass to renderer
+            out = BytesIO()
+            cropped_img.save(out, format="PNG", optimize=True)
+            data["photo_banner_bytes"] = out.getvalue()
+
+        except Exception as e:
+            st.error(f"Could not load/crop the uploaded image: {e}")
+            data.pop("photo_banner_bytes", None)
+    else:
+        data.pop("photo_banner_bytes", None)
+        data["photo_banner_path"] = "photo_banner.png"
+        st.caption("No upload: using the default banner shipped with the app.")
+
+
 
     st.divider()
 
