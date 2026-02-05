@@ -20,43 +20,49 @@ TARGET_RATIO = TARGET_W / TARGET_H
 
 import math
 
-def safe_integer_ratio(img_w: int, img_h: int, base_w: int = TARGET_W, base_h: int = TARGET_H) -> tuple[int, int]:
+def safe_integer_ratio(
+    img_w: int,
+    img_h: int,
+    base_w: int = TARGET_W,
+    base_h: int = TARGET_H,
+) -> tuple[int, int]:
     """
-    Return an integer (rw, rh) close to (base_w, base_h) but "compatible" with the image
-    so the cropper is less likely to start with an oversized crop box.
+    Build an integer aspect ratio for st_cropper.
 
-    Strategy:
-    - Start from base ratio.
-    - If image is very square/tall relative to the target, reduce the ratio a bit by
-      scaling base_w down (keeping rh fixed scale) so rw/rh approaches img_w/img_h.
-    - Always keep gcd-reduced integers.
+    Steps:
+    1) height_ratio = img_h / 700, width_ratio = img_w / 1525
+    2) If both > 1.1 -> return (1525, 700)
+    3) Else smallest_ratio = min(height_ratio, width_ratio) / 1.1
+       new_width_box  = int(1525 * smallest_ratio)
+       new_height_box = int(700  * smallest_ratio)
+    4) Reduce (w,h) by gcd, keep sane minimums.
     """
     if img_w <= 0 or img_h <= 0:
         return (base_w, base_h)
 
-    target = base_w / base_h
-    img_ratio = img_w / img_h
+    height_ratio = img_h / base_h
+    width_ratio = img_w / base_w
 
-    # If the image is much less wide than the target, shrink the ratio toward image ratio.
-    # Clamp factor to keep it "almost right" (e.g., allow down to 70% of target ratio).
-    if img_ratio < target:
-        factor = max(0.40, img_ratio / target)  # in [0.70, 1.0)
-    else:
-        factor = 1.0
+    margin_factor = 7.5
 
-    rw = max(1, int(round(base_w * factor)))
-    rh = max(1, int(round(base_h * factor)))  # keep height baseline
-
-    # Reduce to simplest integers
-    g = math.gcd(rw, rh)
-    rw //= g
-    rh //= g
-
-    # Safety: ensure not degenerate
-    if rw < 2 or rh < 2:
+    if height_ratio > margin_factor and width_ratio > margin_factor:
         return (base_w, base_h)
 
-    return (rw, rh)
+    smallest_ratio = min(height_ratio, width_ratio) / margin_factor
+
+    new_w = max(1, int(base_w * smallest_ratio))
+    new_h = max(1, int(base_h * smallest_ratio))
+
+    # Reduce to simplest integers (helps some cropper implementations)
+    # g = math.gcd(new_w, new_h)
+    # new_w //= g
+    # new_h //= g
+
+    # Safety: avoid degenerate ratios
+    if new_w < 2 or new_h < 2:
+        return (base_w, base_h)
+
+    return (new_w, new_h)
 
 
 
