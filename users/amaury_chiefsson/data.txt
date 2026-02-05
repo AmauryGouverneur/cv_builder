@@ -1,0 +1,69 @@
+{
+  "first_name": "Amaury",
+  "last_name": "Chiefsson",
+  "title": "PROJECT MANAGER",
+  "profile_text": "Project manager, CAE engineer, and product manager with a strong foundation in mechanical design, simulation, and product development.",
+  "photo_banner_path": "photo_banner.png",
+  "right_blocks": [
+    {
+      "heading": "Previous positions",
+      "body": "Project Manager, CAE Engineer, Product Manager"
+    },
+    {
+      "heading": "Key Competences",
+      "body": "Leadership, Problem solving, Project Management, Analytics, Product development, FEM, CFD"
+    },
+    {
+      "heading": "Skills",
+      "body": "Python, Matlab, Microsoft Office, Hypermesh, Radioss, AcuSolve"
+    },
+    {
+      "heading": "Keywords",
+      "body": "Project management, engineering, leadership, finite element method, product development, R&D, CFD, Product management, simulation, CAE"
+    }
+  ],
+  "experience": [],
+  "summary_enabled": true,
+  "employment_rows": [
+    {
+      "year": "2026",
+      "org": "CHIEF CONSULTING AB"
+    },
+    {
+      "year": "2025",
+      "org": "MARSHALL GROUP"
+    },
+    {
+      "year": "2022-2025",
+      "org": "POC SPORTS"
+    }
+  ],
+  "extracurricular_rows": [
+    {
+      "year": "2021-2022",
+      "text": "SIGMA INDUSTRY STUDENT AMBASSADOR"
+    },
+    {
+      "year": "2021",
+      "text": "ABB SUSTAINABLE TALENT PROGRAM"
+    }
+  ],
+  "about_me": "Passionate about moving in nature, whether I’m walking, running or cycling. In my free time I like to travel, cook dinner with friends and read books.",
+  "education_rows": [
+    {
+      "years": "2020--2022",
+      "text": "M.Sc. Mechanical Engineering: Solid Mechanics, KTH Royal Institute of Technology"
+    },
+    {
+      "years": "2016--2020",
+      "text": "B.Sc. Mechanical Engineering, KTH Royal Institute of Technology"
+    },
+    {
+      "years": "2019--2020",
+      "text": "French, general course, France Langue, Nice, France"
+    }
+  ],
+  "languages_block": "Swedish -- Mother tongue\nEnglish -- Fluent\nFrench -- Fluent",
+  "other_skills_block": "B driver’s license",
+  "blank_last_page": true
+}

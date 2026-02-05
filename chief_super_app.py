@@ -125,9 +125,24 @@ def load_profile_into_state(profile_id: str) -> None:
         merged.pop("photo_banner_bytes", None)
         merged["photo_banner_path"] = "photo_banner.png"
 
+    # ✅ Load existing outputs for preview/download
+    if paths["pdf"].exists():
+        st.session_state.last_pdf = paths["pdf"].read_bytes()
+    else:
+        st.session_state.last_pdf = None
+
+    if paths["tex"].exists():
+        st.session_state.last_tex = paths["tex"].read_text(encoding="utf-8")
+    else:
+        st.session_state.last_tex = None
+
+    # Optional: since we’re loading from disk, not compiling now
+    st.session_state.last_workdir = None
+
     st.session_state.data = merged
     st.session_state.selected_profile = profile_id
     st.session_state.profile_loaded_once = True
+
 
 
 def save_profile_from_state(profile_id: str, result_pdf: bytes, result_tex: str) -> None:
@@ -315,9 +330,7 @@ with left:
 
             st.caption("Crop (ratio fixed near 1525×700). You can move + resize the box.")
 
-            # Use integer ratio pair (you wanted integer enforcement)
-            # (keeps ratio exact)
-            rw, rh = 1525, 700
+            rw, rh = safe_integer_ratio(img.size[0], img.size[1])
 
             cropped_img = st_cropper(
                 img,
@@ -328,7 +341,7 @@ with left:
             )
 
             # Normalize output size for LaTeX stability
-            cropped_img = cropped_img.resize((1525, 700), Image.LANCZOS)
+            #cropped_img = cropped_img.resize((1525, 700), Image.LANCZOS)
 
             st.image(cropped_img, caption="Cropped banner preview", width="stretch")
 
@@ -493,7 +506,7 @@ with right:
     st.subheader("Preview")
     if st.session_state.last_pdf:
         try:
-            st.pdf(st.session_state.last_pdf)
+            st.pdf(st.session_state.last_pdf, height=900)
         except Exception:
             st.info("PDF preview is unavailable here. Download the PDF to view it.")
     else:
